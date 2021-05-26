@@ -1,10 +1,11 @@
-package yoonho.demo.reactive.service;
+package yoonho.demo.reactive.util;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,10 +13,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ApiService {
-	@Autowired private WebClient webClient;
+public class WebClientUtil {
+	private static WebClient webClient;
 	
-	protected <T> WebClient.ResponseSpec callPost(String baseUrl, String uri, Object[] params, T requestObject) {
+	@Component
+	static class Init {
+		@Autowired
+		void init(WebClient webClient) throws Exception {
+			WebClientUtil.webClient = webClient;
+		}
+	}
+	
+	public static <T> WebClient.ResponseSpec callPost(String baseUrl, String uri, Object[] params, T requestObject) {
 		return webClient.mutate()
 		.baseUrl(baseUrl)
 		.build()
@@ -32,7 +41,7 @@ public class ApiService {
                  .map(body -> new RuntimeException(body)));
 	}
 	
-	protected <T> WebClient.ResponseSpec callGet(HttpHeaders httpHeaders, String baseUrl, String uri, MultiValueMap<String, String> queryParam) {
+	public static <T> WebClient.ResponseSpec callGet(HttpHeaders httpHeaders, String baseUrl, String uri, MultiValueMap<String, String> queryParam) {
 		return webClient.mutate()
 		.baseUrl(baseUrl)
 		.build()

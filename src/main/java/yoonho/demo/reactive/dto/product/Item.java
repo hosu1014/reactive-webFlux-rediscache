@@ -1,5 +1,6 @@
 package yoonho.demo.reactive.dto.product;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -11,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Slf4j
-public class Item {
+public class Item implements Serializable {
+	private static final long serialVersionUID = -1330231050923732439L;
 	private String spdNo;
 	private String spdNm;
 	private String sitmNo;

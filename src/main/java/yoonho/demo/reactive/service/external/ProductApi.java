@@ -10,20 +10,21 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
+import yoonho.demo.reactive.base.cache.ReactorCacheables;
 import yoonho.demo.reactive.dto.CommonRes;
 import yoonho.demo.reactive.dto.product.Item;
 import yoonho.demo.reactive.dto.product.ProductReq;
-import yoonho.demo.reactive.service.ApiService;
+import yoonho.demo.reactive.util.WebClientUtil;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProductApi extends ApiService {
+public class ProductApi {
 	@Value("${api.baseUri.lotteon}")
 	private String baseUrl;
 	
 	public Flux<Item> getProductList(List<ProductReq> productReqList) {
-		return callPost(baseUrl, "/product/v1/detail/productDetailList?dataType={dataType}", new Object[]{"LIGHT2"}, productReqList)
+		return WebClientUtil.callPost(baseUrl, "/product/v1/detail/productDetailList?dataType={dataType}", new Object[]{"LIGHT2"}, productReqList)
 		        .bodyToMono(new ParameterizedTypeReference<CommonRes<List<Item>>>() {})
 				.map(p -> {
 					return p.getData();
@@ -31,6 +32,7 @@ public class ProductApi extends ApiService {
 				.flatMapMany(Flux::fromIterable);
 	}
 	
+	@ReactorCacheables(name="cache:api:product")
 	public Flux<Item> getProduct(ProductReq productReq) {
 		List<ProductReq> productReqList = new ArrayList<ProductReq>();
 		productReqList.add(productReq);
